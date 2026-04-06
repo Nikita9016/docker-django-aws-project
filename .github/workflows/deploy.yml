@@ -3,39 +3,26 @@ name: Django CI/CD
 on:
   push:
     branches:
-      - main  # Deploy only when code is pushed to main branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up SSH to EC2
-      - name: Set up SSH
+      - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.test3 }} # Your private key secret
+          ssh-private-key: ${{ secrets.test3 }}
 
-      # 3️⃣ Deploy code and run Django commands
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.201.124.216 << 'EOF'
-            cd ~/docker-django-aws-project
-            git pull origin main
-
-            # Stop existing containers
-            docker-compose down
-
-            # Run migrations
-            docker-compose run --rm django_app python manage.py migrate
-
-            # Collect static files
-            docker-compose run --rm django_app python manage.py collectstatic --noinput
-
-            # Start containers
-            docker-compose up -d --build
-          EOF 
+          ssh -o StrictHostKeyChecking=no ubuntu@13.201.124.216 "
+          cd ~/docker-django-aws-project &&
+          git pull origin main &&
+          docker compose down &&
+          docker compose up -d --build
+          "
