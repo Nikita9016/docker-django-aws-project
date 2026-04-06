@@ -22,7 +22,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.201.124.216 "
             cd ~/docker-django-aws-project &&
-            git reset --hard &&
             git pull origin main &&
             docker-compose down &&
             docker-compose up -d --build
