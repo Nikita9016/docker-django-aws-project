@@ -4,4 +4,4 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("Django Docker AWS Deployment Working")
+    return HttpResponse("Hello Docker")
