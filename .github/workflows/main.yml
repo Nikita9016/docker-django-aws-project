@@ -20,9 +20,9 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@44.221.58.231"
-            cd ~/docker-django-aws-project &&
-            git pull origin main &&
-            docker-compose down &&
+          ssh -o StrictHostKeyChecking=no ubuntu@44.221.58.231 << 'EOF'
+            cd ~/docker-django-aws-project
+            git pull origin main
+            docker-compose down
             docker-compose up -d --build
-          "
+          EOF
