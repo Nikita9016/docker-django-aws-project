@@ -39,10 +39,10 @@ jobs:
         run: sleep 10
 
       - name: Run Django Migrations
-        run: docker compose exec django_app python3 manage.py migrate --noinput
+        run: docker compose exec web python3 manage.py migrate --noinput
 
       - name: Collect Static Files
-        run: docker compose exec django_app python3 manage.py collectstatic --noinput
+        run: docker compose exec web python3 manage.py collectstatic --noinput
 
       - name: Test Django Admin URL
         run: |
