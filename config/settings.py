@@ -90,10 +90,11 @@ AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
 
-AWS_DEFAULT_ACL = None
+AWS_DEFAULT_ACL = "public-read"
 AWS_S3_FILE_OVERWRITE = False
 AWS_LOCATION = "static"
-
+AWS_S3_ENDPOINT_URL = f"https://s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+AWS_S3_ADDRESSING_STYLE = "virtual"
 # -----------------------------
 # Django 4.2+ STORAGE CONFIG
 # -----------------------------
