@@ -1,11 +1,11 @@
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-# -----------------------------
-# Load ENV
-# -----------------------------
-load_dotenv()
+# only load .env in local
+if os.path.exists(".env"):
+    from dotenv import load_dotenv
+    load_dotenv()
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
