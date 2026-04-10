@@ -14,46 +14,44 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # ✅ STEP 1: Create .env file from GitHub Secrets
+      # ✅ SAFE .env creation (NO PARSING ISSUE)
       - name: Create .env file
         run: |
-          cat <<EOF > .env
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_STORAGE_BUCKET_NAME=${{ secrets.AWS_STORAGE_BUCKET_NAME }}
-          AWS_S3_REGION_NAME=${{ secrets.AWS_S3_REGION_NAME }}
-          DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-          DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}
-          EOF
+          printf "AWS_ACCESS_KEY_ID=%s\n" "${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          printf "AWS_SECRET_ACCESS_KEY=%s\n" "${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          printf "AWS_STORAGE_BUCKET_NAME=%s\n" "${{ secrets.AWS_STORAGE_BUCKET_NAME }}" >> .env
+          printf "AWS_S3_REGION_NAME=%s\n" "${{ secrets.AWS_S3_REGION_NAME }}" >> .env
+          printf "DJANGO_SECRET_KEY=%s\n" "${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          printf "DJANGO_DEBUG=%s\n" "${{ secrets.DJANGO_DEBUG }}" >> .env
 
-      # ✅ (Optional but helpful) Debug
+      # (Optional Debug)
       - name: Check .env file
         run: cat .env
 
-      # ✅ STEP 2: Build & Start Docker
+      # ✅ Build Docker
       - name: Build & Start Docker Compose
         run: docker compose up -d --build
 
-      # ✅ Wait for container
-      - name: Wait for Django to Start
-        run: sleep 10
+      # ✅ Wait until container is ready (safe method)
+      - name: Wait for Django container
+        run: |
+          for i in {1..20}; do
+            docker compose ps
+            docker compose exec web python3 manage.py check && break
+            sleep 3
+          done
 
-      # ✅ STEP 3: Run Migrations
-      - name: Run Django Migrations
+      # ✅ Migrations
+      - name: Run Migrations
         run: docker compose exec web python3 manage.py migrate --noinput
 
-      # ✅ STEP 4: Collect Static (S3 upload)
+      # ✅ Static files (SAFE for S3)
       - name: Collect Static Files
         run: docker compose exec web python3 manage.py collectstatic --noinput
 
       # ✅ Done
-      - name: Done
-        run: echo "CI/CD Pipeline executed successfully 🚀"
+      - name: Success
+        run: echo "CI/CD Pipeline completed successfully 🚀"
