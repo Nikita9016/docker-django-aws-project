@@ -125,3 +125,5 @@ MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 # REQUIRED (even for S3)
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+print("REGION:", AWS_S3_REGION_NAME)
+print("BUCKET:", AWS_STORAGE_BUCKET_NAME)
