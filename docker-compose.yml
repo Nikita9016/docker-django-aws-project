@@ -12,4 +12,4 @@ services:
       - .env
 
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
+      DJANGO_SETTINGS_MODULE: config.settings
