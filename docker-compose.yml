@@ -8,16 +8,8 @@ services:
     ports:
       - "8000:8000"
 
-    # ❌ REMOVE THIS
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
 
-    # ✅ USE THIS
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
-      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME}
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
