@@ -29,7 +29,8 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
           echo "AWS_STORAGE_BUCKET_NAME=${{ secrets.AWS_STORAGE_BUCKET_NAME }}" >> .env
           echo "AWS_S3_REGION_NAME=${{ secrets.AWS_S3_REGION_NAME }}" >> .env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'" >> .env
+          echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> .env
 
       # ✅ (Optional but helpful) Debug
       - name: Check .env file
