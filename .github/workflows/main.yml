@@ -10,15 +10,6 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
-    env:
-      # ✅ GitHub Secrets for AWS and Django
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
-      AWS_S3_REGION_NAME: ${{ secrets.AWS_S3_REGION_NAME }}
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      DJANGO_DEBUG: 0
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -31,19 +22,35 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build & Start Docker Compose
+      # ✅ STEP 1: Create .env file from GitHub Secrets
+      - name: Create .env file
         run: |
-          docker compose up -d --build
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_STORAGE_BUCKET_NAME=${{ secrets.AWS_STORAGE_BUCKET_NAME }}" >> .env
+          echo "AWS_S3_REGION_NAME=${{ secrets.AWS_S3_REGION_NAME }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
 
+      # ✅ (Optional but helpful) Debug
+      - name: Check .env file
+        run: cat .env
+
+      # ✅ STEP 2: Build & Start Docker
+      - name: Build & Start Docker Compose
+        run: docker compose up -d --build
+
+      # ✅ Wait for container
       - name: Wait for Django to Start
         run: sleep 10
 
+      # ✅ STEP 3: Run Migrations
       - name: Run Django Migrations
         run: docker compose exec web python3 manage.py migrate --noinput
 
+      # ✅ STEP 4: Collect Static (S3 upload)
       - name: Collect Static Files
         run: docker compose exec web python3 manage.py collectstatic --noinput
 
-      - name: Test Django Admin URL
-        run: |
-          echo "You can now access your admin at your server URL"
+      # ✅ Done
+      - name: Done
+        run: echo "CI/CD Pipeline executed successfully 🚀"
